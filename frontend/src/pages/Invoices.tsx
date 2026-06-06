@@ -24,7 +24,7 @@ const Invoices = () => {
       if (action === 'pay') await dispatch(markInvoicePaid(id)).unwrap()
       dispatch(fetchInvoices())
     } catch (err) {
-      console.error(err)
+      console.error(`Failed to ${action} invoice:`, err)
     }
   }
 

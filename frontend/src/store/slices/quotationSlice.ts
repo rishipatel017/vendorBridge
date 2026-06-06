@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../../services/api'
 
 interface Quotation {
   id: string
@@ -22,10 +22,12 @@ const initialState: QuotationState = {
 }
 
 export const fetchQuotations = createAsyncThunk('quotations/fetchQuotations', async () => {
-  const token = localStorage.getItem('token')
-  const response = await axios.get('http://localhost:3000/api/quotation', {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+  const response = await api.get('/quotation')
+  return response.data
+})
+
+export const submitQuotation = createAsyncThunk('quotations/submit', async (id: string) => {
+  const response = await api.post(`/quotation/${id}/submit`)
   return response.data
 })
 
@@ -50,6 +52,10 @@ const quotationSlice = createSlice({
       .addCase(fetchQuotations.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message || 'Failed to fetch quotations'
+      })
+      .addCase(submitQuotation.fulfilled, (state, action) => {
+        const idx = state.quotations.findIndex(q => q.id === action.payload.id)
+        if (idx !== -1) state.quotations[idx] = action.payload
       })
   },
 })

@@ -17,10 +17,11 @@ const Audit = () => {
       setLoading(true)
       try {
         const res = await api.get(`/audit?page=${page}`)
-        setLogs(res.data.data)
-        setMeta(res.data.meta)
+        setLogs(res.data.data || [])
+        setMeta(res.data.meta || null)
       } catch (err) {
-        console.error(err)
+        console.error('Failed to fetch audit logs:', err)
+        setLogs([])
       } finally {
         setLoading(false)
       }

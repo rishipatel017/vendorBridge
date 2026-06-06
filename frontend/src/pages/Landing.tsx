@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Box, Container, Typography, Button, Grid, Card, CardContent } from '@mui/material'
-import { Business, Description, ShoppingCart, Receipt, TrendingUp, Security, CheckCircle } from '@mui/icons-material'
+import { Box, Container, Typography, Button, Grid, Card, CardContent, Chip } from '@mui/material'
+import { Business, Description, ShoppingCart, Receipt, TrendingUp, Security, CheckCircle, AdminPanelSettings, Person, Engineering, Badge } from '@mui/icons-material'
 import logo from '../assets/logo.png'
 
 const Landing = () => {
@@ -11,6 +11,33 @@ const Landing = () => {
     { icon: <Receipt sx={{ fontSize: 48, color: '#818cf8' }} />, title: 'Invoice Processing', description: 'Automate invoice generation, GST calculations, and payment tracking.' },
     { icon: <TrendingUp sx={{ fontSize: 48, color: '#818cf8' }} />, title: 'Analytics & Reports', description: 'Gain insights with comprehensive reports on vendor performance and spend.' },
     { icon: <Security sx={{ fontSize: 48, color: '#818cf8' }} />, title: 'Secure & Compliant', description: 'Enterprise-grade security with role-based access control and audit logging.' }
+  ]
+
+  const roles = [
+    {
+      icon: <AdminPanelSettings sx={{ fontSize: 40, color: '#ef4444' }} />,
+      title: 'Admin',
+      color: '#ef4444',
+      access: ['Full system access', 'Vendor management', 'User management', 'Audit logs', 'All reports', 'System configuration']
+    },
+    {
+      icon: <Engineering sx={{ fontSize: 40, color: '#4f46e5' }} />,
+      title: 'Procurement Officer',
+      color: '#4f46e5',
+      access: ['Create RFQs', 'Manage quotations', 'Generate POs', 'Invoice processing', 'Vendor reports', 'Spend analysis']
+    },
+    {
+      icon: <Person sx={{ fontSize: 40, color: '#10b981' }} />,
+      title: 'Vendor',
+      color: '#10b981',
+      access: ['View RFQs', 'Submit quotations', 'Accept POs', 'Generate invoices', 'Track deliveries', 'View performance']
+    },
+    {
+      icon: <Badge sx={{ fontSize: 40, color: '#f59e0b' }} />,
+      title: 'Manager',
+      color: '#f59e0b',
+      access: ['Approve quotations', 'Review requests', 'Approval dashboard', 'Reject requests', 'View analytics', 'Audit trail']
+    }
   ]
 
   return (
@@ -92,6 +119,37 @@ const Landing = () => {
                     </Box>
                     <Typography variant="h6" sx={{ mb: 1.5 }}>{feature.title}</Typography>
                     <Typography sx={{ color: 'text.secondary', fontSize: 14 }}>{feature.description}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* User Roles Section */}
+      <Box sx={{ py: 12, bgcolor: '#0f172a' }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography variant="h2" sx={{ mb: 2 }}>Role-Based Access</Typography>
+            <Typography sx={{ color: 'text.secondary', maxWidth: 600, mx: 'auto' }}>
+              Tailored access levels for different user types ensuring security and efficiency.
+            </Typography>
+          </Box>
+          <Grid container spacing={4}>
+            {roles.map((role, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card className="glass-card" sx={{ height: '100%', p: 1, border: `1px solid ${role.color}33` }}>
+                  <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                    <Box sx={{ mb: 3, display: 'inline-flex', p: 2, borderRadius: '50%', bgcolor: `${role.color}22` }}>
+                      {role.icon}
+                    </Box>
+                    <Typography variant="h6" sx={{ mb: 1, color: role.color }}>{role.title}</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
+                      {role.access.map((item, idx) => (
+                        <Chip key={idx} label={item} size="small" sx={{ fontSize: 11, bgcolor: `${role.color}15`, color: role.color, border: `1px solid ${role.color}33` }} />
+                      ))}
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>

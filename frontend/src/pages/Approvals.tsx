@@ -26,8 +26,9 @@ const Approvals = () => {
     try {
       await dispatch(approveRequest(id)).unwrap()
       await dispatch(createPO(quotationId)).unwrap() // auto-generate PO on approval
+      dispatch(fetchPendingApprovals())
     } catch (err) {
-      console.error(err)
+      console.error('Failed to approve request:', err)
     }
   }
 
@@ -37,8 +38,9 @@ const Approvals = () => {
       await dispatch(rejectRequest({ id: selectedId, remarks })).unwrap()
       setRejectOpen(false)
       setRemarks('')
+      dispatch(fetchPendingApprovals())
     } catch (err) {
-      console.error(err)
+      console.error('Failed to reject request:', err)
     }
   }
 

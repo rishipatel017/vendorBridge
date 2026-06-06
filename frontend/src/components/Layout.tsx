@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
   { text: 'Invoices',        icon: <Receipt />,       path: '/invoices',        roles: ['ADMIN', 'PROCUREMENT_OFFICER'] },
   { text: 'Reports',         icon: <Assessment />,    path: '/reports',         roles: ['ADMIN', 'PROCUREMENT_OFFICER'] },
   { text: 'Audit Log',       icon: <History />,       path: '/audit',           roles: ['ADMIN'] },
+  { text: 'Profile',         icon: <Circle />,        path: '/profile' },
 ]
 
 const roleColors: Record<string, string> = {
@@ -229,7 +230,7 @@ const Layout = () => {
           </Box>
 
           <Tooltip title="Notifications">
-            <IconButton size="small" sx={{ color: 'text.secondary' }}>
+            <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={() => navigate('/notifications')}>
               <Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}>
                 <Notifications fontSize="small" />
               </Badge>
@@ -237,10 +238,13 @@ const Layout = () => {
           </Tooltip>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pl: 1, borderLeft: '1px solid', borderColor: 'divider' }}>
-            <Avatar sx={{ width: 30, height: 30, fontSize: 12, fontWeight: 700, bgcolor: roleColors[user?.role || ''] || '#4f46e5' }}>
+            <Avatar 
+              sx={{ width: 30, height: 30, fontSize: 12, fontWeight: 700, bgcolor: roleColors[user?.role || ''] || '#4f46e5', cursor: 'pointer' }}
+              onClick={() => navigate('/profile')}
+            >
               {user?.firstName?.[0]}{user?.lastName?.[0]}
             </Avatar>
-            <Box>
+            <Box sx={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>
               <Typography sx={{ fontSize: 13, fontWeight: 600, color: 'text.primary', lineHeight: 1.2 }}>
                 {user?.firstName} {user?.lastName}
               </Typography>

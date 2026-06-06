@@ -5,9 +5,9 @@ import {
   Box, Typography, Card, Table, TableBody, TableCell, TableHead, TableRow,
   Button, CircularProgress, IconButton, Tooltip,
 } from '@mui/material'
-import { Visibility, Send } from '@mui/icons-material'
+import { Visibility, Send, CheckCircle, Cancel } from '@mui/icons-material'
 import { AppDispatch, RootState } from '../store/store'
-import { fetchQuotations } from '../store/slices/quotationSlice'
+import { fetchQuotations, submitQuotation } from '../store/slices/quotationSlice'
 import { submitForApproval } from '../store/slices/approvalSlice'
 import { format } from 'date-fns'
 
@@ -24,9 +24,18 @@ const Quotations = () => {
   const handleSendForApproval = async (id: string) => {
     try {
       await dispatch(submitForApproval(id)).unwrap()
-      dispatch(fetchQuotations()) // refresh status
+      dispatch(fetchQuotations())
     } catch (err) {
-      console.error(err)
+      console.error('Failed to send for approval:', err)
+    }
+  }
+
+  const handleSubmitQuotation = async (id: string) => {
+    try {
+      await dispatch(submitQuotation(id)).unwrap()
+      dispatch(fetchQuotations())
+    } catch (err) {
+      console.error('Failed to submit quotation:', err)
     }
   }
 
@@ -72,15 +81,24 @@ const Quotations = () => {
                       </span>
                     </TableCell>
                     <TableCell align="right">
-                      {user?.role === 'PROCUREMENT_OFFICER' && quote.status === 'SUBMITTED' && !quote.approval && (
-                        <Tooltip title="Send for Approval">
-                          <IconButton size="small" color="primary" onClick={() => handleSendForApproval(quote.id)}>
+                      {/* VENDOR: submit draft quotation */}
+                      {user?.role === 'VENDOR' && quote.status === 'DRAFT' && (
+                        <Tooltip title="Submit Quotation">
+                          <IconButton size="small" color="primary" onClick={() => handleSubmitQuotation(quote.id)}>
                             <Send fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       )}
+                      {/* PROCUREMENT_OFFICER: send submitted quotation for manager approval */}
+                      {user?.role === 'PROCUREMENT_OFFICER' && quote.status === 'SUBMITTED' && !quote.approval && (
+                        <Tooltip title="Send for Approval">
+                          <IconButton size="small" color="secondary" onClick={() => handleSendForApproval(quote.id)}>
+                            <CheckCircle fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                       <Tooltip title="View Details">
-                        <IconButton size="small">
+                        <IconButton size="small" onClick={() => navigate(`/quotations/${quote.id}`)}>
                           <Visibility fontSize="small" />
                         </IconButton>
                       </Tooltip>

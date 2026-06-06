@@ -4,7 +4,7 @@ import {
   Box, Typography, Grid, Card, CardContent, CircularProgress,
   Table, TableBody, TableCell, TableHead, TableRow, Chip,
 } from '@mui/material'
-import { Business, Description, Approval, CurrencyRupee, History } from '@mui/icons-material'
+import { Business, Description, Approval, CurrencyRupee, History, ShoppingCart, Receipt, RequestQuote, CheckCircle, Cancel } from '@mui/icons-material'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -18,6 +18,7 @@ const COLORS = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444']
 const Dashboard = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { dashboard, loading, error } = useSelector((state: RootState) => state.reports)
+  const { user } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
     dispatch(fetchDashboard())
@@ -39,6 +40,12 @@ const Dashboard = () => {
 
   const { kpis, monthlySpending, vendorPerformance, recentPOs, recentActivity } = dashboard
 
+  // Role-based dashboard content
+  const isAdmin = user?.role === 'ADMIN'
+  const isProcurementOfficer = user?.role === 'PROCUREMENT_OFFICER'
+  const isVendor = user?.role === 'VENDOR'
+  const isManager = user?.role === 'MANAGER'
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box className="page-header">
@@ -48,92 +55,284 @@ const Dashboard = () => {
 
       {/* ── KPI Cards ─────────────────────────────────────────────────── */}
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Box className="kpi-card gradient-card-blue">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <CurrencyRupee sx={{ fontSize: 28, opacity: 0.9 }} />
-              <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Total Procurement</Typography>
-            </Box>
-            <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
-              ₹{kpis.totalProcurement.toLocaleString('en-IN')}
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Box className="kpi-card gradient-card-purple">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <Business sx={{ fontSize: 28, opacity: 0.9 }} />
-              <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Active Vendors</Typography>
-            </Box>
-            <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
-              {kpis.totalVendors}
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Box className="kpi-card gradient-card-emerald">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <Description sx={{ fontSize: 28, opacity: 0.9 }} />
-              <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Active RFQs</Typography>
-            </Box>
-            <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
-              {kpis.activeRFQs}
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Box className="kpi-card gradient-card-amber">
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-              <Approval sx={{ fontSize: 28, opacity: 0.9 }} />
-              <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Pending Approvals</Typography>
-            </Box>
-            <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
-              {kpis.pendingApprovals}
-            </Typography>
-          </Box>
-        </Grid>
+        {isAdmin && (
+          <>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-blue">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <CurrencyRupee sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Total Procurement</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  ₹{kpis.totalProcurement?.toLocaleString('en-IN') || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-purple">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Business sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Active Vendors</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.totalVendors || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-emerald">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Description sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Active RFQs</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.activeRFQs || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-amber">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Approval sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Pending Approvals</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.pendingApprovals || 0}
+                </Typography>
+              </Box>
+            </Grid>
+          </>
+        )}
+        {isProcurementOfficer && (
+          <>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-blue">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <CurrencyRupee sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>My Procurement</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  ₹{kpis.totalProcurement?.toLocaleString('en-IN') || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-purple">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Description sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>My RFQs</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.myRFQs || kpis.activeRFQs || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-emerald">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <ShoppingCart sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Open POs</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.openPOs || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-amber">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Receipt sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Pending Invoices</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.pendingInvoices || 0}
+                </Typography>
+              </Box>
+            </Grid>
+          </>
+        )}
+        {isVendor && (
+          <>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-blue">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <CurrencyRupee sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Total Revenue</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  ₹{kpis.totalRevenue?.toLocaleString('en-IN') || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-purple">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Description sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>RFQ Invitations</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.rfqInvitations || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-emerald">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <RequestQuote sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Quotations Sent</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.quotationsSent || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-amber">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Approval sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Pending Deliveries</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.pendingDeliveries || 0}
+                </Typography>
+              </Box>
+            </Grid>
+          </>
+        )}
+        {isManager && (
+          <>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-blue">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Approval sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Pending Approvals</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.pendingApprovals || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-purple">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <CheckCircle sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Approved Today</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.approvedToday || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-emerald">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Cancel sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Rejected Today</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  {kpis.rejectedToday || 0}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Box className="kpi-card gradient-card-amber">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <CurrencyRupee sx={{ fontSize: 28, opacity: 0.9 }} />
+                  <Typography sx={{ fontWeight: 600, opacity: 0.9 }}>Avg Approval Value</Typography>
+                </Box>
+                <Typography sx={{ fontSize: 32, fontWeight: 700, fontFamily: 'Outfit' }}>
+                  ₹{kpis.avgApprovalValue?.toLocaleString('en-IN') || 0}
+                </Typography>
+              </Box>
+            </Grid>
+          </>
+        )}
       </Grid>
 
       {/* ── Charts ────────────────────────────────────────────────────── */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ height: 400, p: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Monthly Spending (12 Months)</Typography>
-            <ResponsiveContainer width="100%" height="85%">
-              <AreaChart data={monthlySpending}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" />
-                <YAxis tickFormatter={(val) => `₹${(val / 1000).toFixed(0)}k`} />
-                <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Spend']} />
-                <Area type="monotone" dataKey="amount" stroke="#4f46e5" fill="rgba(79,70,229,0.2)" strokeWidth={3} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Card>
+      {(isAdmin || isProcurementOfficer) && (
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Card sx={{ height: 400, p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>Monthly Spending (12 Months)</Typography>
+              <ResponsiveContainer width="100%" height="85%">
+                <AreaChart data={monthlySpending}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(val) => `₹${(val / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Spend']} />
+                  <Area type="monotone" dataKey="amount" stroke="#4f46e5" fill="rgba(79,70,229,0.2)" strokeWidth={3} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card sx={{ height: 400, p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>Vendor Performance</Typography>
+              <ResponsiveContainer width="100%" height="85%">
+                <PieChart>
+                  <Pie
+                    data={vendorPerformance}
+                    cx="50%" cy="45%"
+                    innerRadius={60} outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="ratingScore"
+                    nameKey="companyName"
+                  >
+                    {vendorPerformance.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => [`${Math.round(value)}% Rating`, 'Performance']} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: 400, p: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Vendor Performance</Typography>
-            <ResponsiveContainer width="100%" height="85%">
-              <PieChart>
-                <Pie
-                  data={vendorPerformance}
-                  cx="50%" cy="45%"
-                  innerRadius={60} outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="ratingScore"
-                  nameKey="companyName"
-                >
-                  {vendorPerformance.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value: number) => [`${Math.round(value)}% Rating`, 'Performance']} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </Card>
+      )}
+
+      {isVendor && (
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ height: 400, p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>Revenue by Month</Typography>
+              <ResponsiveContainer width="100%" height="85%">
+                <AreaChart data={monthlySpending}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(val) => `₹${(val / 1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Revenue']} />
+                  <Area type="monotone" dataKey="amount" stroke="#10b981" fill="rgba(16,185,129,0.2)" strokeWidth={3} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card sx={{ height: 400, p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>Quotation Success Rate</Typography>
+              <ResponsiveContainer width="100%" height="85%">
+                <PieChart>
+                  <Pie
+                    data={vendorPerformance}
+                    cx="50%" cy="45%"
+                    innerRadius={60} outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="ratingScore"
+                    nameKey="companyName"
+                  >
+                    {vendorPerformance.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => [`${Math.round(value)}%`, 'Success Rate']} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
 
       {/* ── Tables ────────────────────────────────────────────────────── */}
       <Grid container spacing={3}>

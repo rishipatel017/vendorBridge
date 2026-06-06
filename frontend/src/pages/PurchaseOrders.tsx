@@ -27,7 +27,7 @@ const PurchaseOrders = () => {
       if (action === 'invoice') await dispatch(generateInvoice(id)).unwrap()
       dispatch(fetchPOs())
     } catch (err) {
-      console.error(err)
+      console.error(`Failed to ${action} PO:`, err)
     }
   }
 

@@ -21,13 +21,13 @@ export class InvoiceController {
   }
 
   @Post('po/:poId')
-  @Roles(UserRole.ADMIN, UserRole.PROCUREMENT_OFFICER)
+  @Roles(UserRole.ADMIN, UserRole.VENDOR)
   createFromPO(@Param('poId') poId: string) {
     return this.invoiceService.createFromPO(poId);
   }
 
   @Post(':id/send')
-  @Roles(UserRole.ADMIN, UserRole.PROCUREMENT_OFFICER)
+  @Roles(UserRole.ADMIN, UserRole.VENDOR)
   send(@Param('id') id: string) {
     return this.invoiceService.send(id);
   }

@@ -63,8 +63,9 @@ const Vendors = () => {
       }
       setOpen(false)
       reset()
+      dispatch(fetchVendors())
     } catch (err) {
-      console.error(err)
+      console.error('Failed to save vendor:', err)
     }
   }
 

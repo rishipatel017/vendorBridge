@@ -11,6 +11,7 @@ import { POModule } from './modules/po/po.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuditModule } from './modules/audit/audit.module';
     InvoiceModule,
     ReportsModule,
     AuditModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

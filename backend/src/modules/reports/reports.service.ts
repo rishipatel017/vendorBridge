@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { ApprovalStatus } from '@prisma/client';
 
 @Injectable()
 export class ReportsService {
@@ -19,7 +20,7 @@ export class ReportsService {
 
     const poWhere = isVendor ? { vendorId } : {};
     const rfqWhere = isProcurement ? { createdBy: user.id } : {};
-    const approvalWhere = isManager ? { approverId: user.id, status: 'PENDING' } : { status: 'PENDING' };
+    const approvalWhere = isManager ? { approverId: user.id, status: ApprovalStatus.PENDING } : { status: ApprovalStatus.PENDING };
 
     const [
       totalVendors,

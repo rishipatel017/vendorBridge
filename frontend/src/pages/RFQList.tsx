@@ -59,14 +59,17 @@ const RFQList = () => {
       })).unwrap()
       setOpen(false)
       reset()
+      dispatch(fetchRFQs())
     } catch (err) {
-      console.error(err)
+      console.error('Failed to create RFQ:', err)
     }
   }
 
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this RFQ?')) {
-      dispatch(deleteRFQ(id))
+      dispatch(deleteRFQ(id)).unwrap().catch(err => {
+        console.error('Failed to delete RFQ:', err)
+      })
     }
   }
 
@@ -76,7 +79,7 @@ const RFQList = () => {
       await api.post(`/rfq/${id}/publish`)
       dispatch(fetchRFQs())
     } catch (err) {
-      console.error(err)
+      console.error('Failed to publish RFQ:', err)
     } finally {
       setPublishing(null)
     }
